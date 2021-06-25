@@ -69,10 +69,8 @@ async function checkLinkAllowance(){
 const WSS_URLS = process.env.WSS_URLS.split(",");
 
 function selectProvider(n){
-	if(eventSubscription !== null){
-		eventSubscription.unsubscribe()
-		.then(() => console.log("Unsubscribed from events with old provider."))
-		.catch((e) => console.log("Couldn't unsubscribe from events with old provider ("+e+")."));		
+	if(eventSubscription !== null && eventSubscription.id !== null){
+		eventSubscription.unsubscribe();		
 	}
 
 	eventSubscription = null;
