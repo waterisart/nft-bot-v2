@@ -249,7 +249,7 @@ async function selectNft(){
 		if(nftTimelock === undefined || nfts.length === 0){ resolve(null); return; }
 		
 		if(providers[selectedProvider].connected){
-			const currentBlock = await web3[n].eth.getBlockNumber();
+			const currentBlock = await web3[selectedProvider].eth.getBlockNumber();
 
 			for(var i = 0; i < nfts.length; i++){
 				const lastSuccess = await tradingContract.methods.nftLastSuccess(nfts[i].id).call();
