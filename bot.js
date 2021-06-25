@@ -21,33 +21,26 @@ const AGGREGATOR_ABI = [{"inputs":[{"internalType":"address","name":"_gov","type
 const NFT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"baseURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"_data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function","constant":true},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 const LINK_ABI = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"},{"name":"_data","type":"bytes"}],"name":"transferAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_subtractedValue","type":"uint256"}],"name":"decreaseApproval","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_addedValue","type":"uint256"}],"name":"increaseApproval","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"data","type":"bytes"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];
 
-let watchingEvents = false, allowedLink = false,
-	openTrades = [], pairs = [], nfts = [], nftsBeingUsed = [], ordersTriggered = [],
-	nftTimelock;
+let allowedLink = false, selectedProvider = null, eventSubscription = null,
+	providers = [], web3 = [], openTrades = [], pairs = [], nfts = [], nftsBeingUsed = [], ordersTriggered = [],
+	nftTimelock, tradingContract, aggregatorContract, nftContract1, nftContract2, nftContract3, nftContract4, nftContract5, linkContract;
 
 // --------------------------------------------
 // 3. INIT: CHECK ENV VARS & LINK ALLOWANCE
 // --------------------------------------------
 
 console.log("Welcome to the Gains.farm NFT bot!");
-if(!process.env.WSS_1 || !process.env.WSS_2
-|| !process.env.PRICES_URL || !process.env.TRADING_ADDRESS
-|| !process.env.AGGREGATOR_ADDRESS || !process.env.NFT1_ADDRESS
-|| !process.env.NFT2_ADDRESS || !process.env.NFT3_ADDRESS
-|| !process.env.NFT4_ADDRESS || !process.env.NFT5_ADDRESS
-|| !process.env.LINK_ADDRESS || !process.env.PRIVATE_KEY
-|| !process.env.PUBLIC_KEY || !process.env.EVENT_CONFIRMATIONS_SEC
-|| !process.env.TRIGGER_TIMEOUT){
+if(!process.env.WSS_URLS || !process.env.PRICES_URL || !process.env.TRADING_ADDRESS
+|| !process.env.AGGREGATOR_ADDRESS || !process.env.NFT1_ADDRESS || !process.env.NFT2_ADDRESS
+|| !process.env.NFT3_ADDRESS || !process.env.NFT4_ADDRESS || !process.env.NFT5_ADDRESS
+|| !process.env.LINK_ADDRESS || !process.env.PRIVATE_KEY || !process.env.PUBLIC_KEY
+|| !process.env.EVENT_CONFIRMATIONS_SEC || !process.env.TRIGGER_TIMEOUT){
 	console.log("Please fill all parameters in the .env file.");
 	process.exit();
-}else{
-	setTimeout(() => {
-		checkLinkAllowance();
-	}, 5*1000);
 }
 
-function checkLinkAllowance(){
-	web3.eth.net.isListening().then(async () => {
+async function checkLinkAllowance(){
+	if(providers[selectedProvider].connected){
 		const allowance = await linkContract.methods.allowance(process.env.PUBLIC_KEY, process.env.TRADING_ADDRESS).call();
 		if(parseFloat(allowance) > 0){
 			allowedLink = true;
@@ -59,70 +52,140 @@ function checkLinkAllowance(){
 			.send({from: process.env.PUBLIC_KEY}).then(() => {
 				console.log("LINK successfully approved.");
 				allowedLink = true;
-			}).catch(() => {
-				console.log("LINK approve tx fail.");
+			}).catch((e) => {
+				console.log("LINK approve tx fail (" + e + ")");
 				setTimeout(() => { checkLinkAllowance(); }, 2*1000);
 			});
 		}
-	}).catch(() => {
+	}else{
 		setTimeout(() => { checkLinkAllowance(); }, 5*1000);
-	});
+	}
 }
 
 // -----------------------------------------
 // 4. WEB3 PROVIDER
 // -----------------------------------------
 
-const getProvider = (url) => {
-	console.log("Connecting to " + url + "...");
-	const wssId = url.toString() === process.env.WSS_1 ? 1 : 2;
-	const provider = new Web3.providers.WebsocketProvider(url, {clientConfig:{keepalive:true,keepaliveInterval:30*1000}});
+const WSS_URLS = process.env.WSS_URLS.split(",");
+
+function selectProvider(n){
+	if(eventSubscription !== null){
+		eventSubscription = null;
+		eventSubscription.unsubscribe()
+		.then(() => console.log("Unsubscribed from events with old provider."))
+		.catch((e) => console.log("Couldn't unsubscribe from events with old provider ("+e+")."));
+	}
+
+	selectedProvider = n;
+	tradingContract = new web3[n].eth.Contract(TRADING_ABI, process.env.TRADING_ADDRESS);
+	aggregatorContract = new web3[n].eth.Contract(AGGREGATOR_ABI, process.env.AGGREGATOR_ADDRESS);
+	nftContract1 = new web3[n].eth.Contract(NFT_ABI, process.env.NFT1_ADDRESS);
+	nftContract2 = new web3[n].eth.Contract(NFT_ABI, process.env.NFT2_ADDRESS);
+	nftContract3 = new web3[n].eth.Contract(NFT_ABI, process.env.NFT3_ADDRESS);
+	nftContract4 = new web3[n].eth.Contract(NFT_ABI, process.env.NFT4_ADDRESS);
+	nftContract5 = new web3[n].eth.Contract(NFT_ABI, process.env.NFT5_ADDRESS);
+	linkContract = new web3[n].eth.Contract(LINK_ABI, process.env.LINK_ADDRESS);
+	fetchTradingVariables();
+	fetchOpenTrades();
+	watchLiveTradingEvents();
+}
+
+const getProvider = (wssId) => {
+	const provider = new Web3.providers.WebsocketProvider(WSS_URLS[wssId], {clientConfig:{keepalive:true,keepaliveInterval:30*1000}});
+
 	provider.on('close', () => {
-		web3._provider.engine.stop();
+		web3[wssId]._provider.engine.stop();
 		setTimeout(() => {
-			web3.eth.net.isListening().then(() => console.log('WSS '+wssId+' connected')).catch(() => {
-				console.log('WSS '+wssId+' closed: switching to other WSS...');
-				web3.setProvider(getProvider(wssId === 1 ? process.env.WSS_2 : process.env.WSS_1));
-			});
+			if(!provider.connected){
+				console.log(WSS_URLS[wssId]+' closed: trying to reconnect...');
+
+				let connectedProvider = -1;
+				for(var i = 0; i < WSS_URLS.length; i++){
+					if(providers[i].connected){
+						connectedProvider = i;
+						break;
+					}
+				}
+				if(connectedProvider > -1 && selectedProvider === wssId){
+					selectProvider(connectedProvider);
+					console.log("Switched to WSS " + WSS_URLS[selectedProvider]);
+				}else if(connectedProvider === -1 && selectedProvider === wssId){
+					console.log("No WSS to switch to...");
+				}
+
+				providers[wssId] = getProvider(wssId);
+				HDWalletProvider.prototype.on = provider.on.bind(providers[wssId]);
+				web3[wssId] = new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, providers[wssId]));
+			}
 		}, 5*1000);
 	});
+
 	provider.on('connect', () => {
 		setTimeout(() => {
-			web3.eth.net.isListening().then(() => {
-				console.log("Connected to WSS " + wssId);
-				fetchTradingVariables();
-				fetchOpenTrades();
-				watchingEvents = false;
-				restartWatchingEvents();
-			}).catch(() => console.log("Error, WSS not connected."));
+			if(provider.connected){
+				console.log('Connected to WSS '+WSS_URLS[wssId]+'.');
+
+				let connectedProvider = -1;
+				for(var i = 0; i < WSS_URLS.length; i++){
+					if(providers[i].connected && i !== wssId){
+						connectedProvider = i;
+						break;
+					}
+				}
+				if(connectedProvider === -1 || selectedProvider === null){
+					selectProvider(wssId);
+					console.log("Switched to WSS " + WSS_URLS[selectedProvider]);
+					checkLinkAllowance();
+				}else{
+					console.log("No need to switch WSS, already connected to " + WSS_URLS[selectedProvider]);
+				}
+			}
 		}, 5*1000);
 	});
-	provider.on('error', () => console.log("WSS "+wssId+" error"));
-	HDWalletProvider.prototype.on = provider.on.bind(provider);
-    return new HDWalletProvider(process.env.PRIVATE_KEY, provider);
+	provider.on('error', () => console.log("WSS "+WSS_URLS[wssId]+" error"));
+	return provider;
 };
 
-const web3 = new Web3(getProvider(process.env.WSS_1));
+for(var i = 0; i < WSS_URLS.length; i++){
+	const provider = getProvider(i)
+	providers.push(provider);
+	HDWalletProvider.prototype.on = provider.on.bind(provider);
+	web3.push(new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, provider)))
+}
+
+setInterval(async () => {
+	let promises = [];
+	for(var i = 0; i < WSS_URLS.length; i++){
+		if(providers[i].connected){
+			promises.push(web3[i].eth.getBlockNumber());
+		}else{
+			promises.push(null);
+		}
+	}
+
+	Promise.all(promises).then((b) => {
+		for(var i = 0; i < WSS_URLS.length; i++){
+			if(providers[i].connected){
+				if(b[i] > b[selectedProvider]){
+					console.log("Switched to WSS " + WSS_URLS[i] + " (block #" + b[i] + " vs #" + b[selectedProvider]);
+					selectProvider(i);
+					break;
+				}
+			}
+		}
+	});
+}, 20*1000);
+
+setInterval(() => {
+	console.log("Current WSS: " + WSS_URLS[selectedProvider]);
+}, 120*1000);
 
 // -----------------------------------------
-// 5. CONTRACTS
+// 5. FETCH PAIRS, NFTS, AND NFT TIMELOCK
 // -----------------------------------------
 
-const tradingContract = new web3.eth.Contract(TRADING_ABI, process.env.TRADING_ADDRESS);
-const aggregatorContract = new web3.eth.Contract(AGGREGATOR_ABI, process.env.AGGREGATOR_ADDRESS);
-const nftContract1 = new web3.eth.Contract(NFT_ABI, process.env.NFT1_ADDRESS);
-const nftContract2 = new web3.eth.Contract(NFT_ABI, process.env.NFT2_ADDRESS);
-const nftContract3 = new web3.eth.Contract(NFT_ABI, process.env.NFT3_ADDRESS);
-const nftContract4 = new web3.eth.Contract(NFT_ABI, process.env.NFT4_ADDRESS);
-const nftContract5 = new web3.eth.Contract(NFT_ABI, process.env.NFT5_ADDRESS);
-const linkContract = new web3.eth.Contract(LINK_ABI, process.env.LINK_ADDRESS);
-
-// -----------------------------------------
-// 6. FETCH PAIRS, NFTS, AND NFT TIMELOCK
-// -----------------------------------------
-
-function fetchTradingVariables(){
-	web3.eth.net.isListening().then(async () => {
+async function fetchTradingVariables(){
+	if(providers[selectedProvider].connected){
 		const nftSuccessTimelock = await aggregatorContract.methods.nftSuccessTimelock().call();
 		const pairsCount = await aggregatorContract.methods.pairsCount().call();
 		nfts = [];
@@ -167,9 +230,9 @@ function fetchTradingVariables(){
 			nftTimelock = nftSuccessTimelock;
 			console.log("Fetched trading variables.");
 		});
-	}).catch(() => {
+	}else{
 		setTimeout(() => { fetchTradingVariables(); }, 2*1000);
-	});
+	}
 }
 
 setInterval(() => {
@@ -178,15 +241,15 @@ setInterval(() => {
 }, 60*10*1000);
 
 // -----------------------------------------
-// 7. SELECT NFT TO EXECUTE ORDERS
+// 6. SELECT NFT TO EXECUTE ORDERS
 // -----------------------------------------
 
 async function selectNft(){
-	return new Promise(resolve => {
+	return new Promise(async resolve => {
 		if(nftTimelock === undefined || nfts.length === 0){ resolve(null); return; }
 		
-		web3.eth.net.isListening().then(async () => {
-			const currentBlock = await web3.eth.getBlockNumber();
+		if(providers[selectedProvider].connected){
+			const currentBlock = await web3[n].eth.getBlockNumber();
 
 			for(var i = 0; i < nfts.length; i++){
 				const lastSuccess = await tradingContract.methods.nftLastSuccess(nfts[i].id).call();
@@ -201,18 +264,18 @@ async function selectNft(){
 			console.log("No suitable NFT to select.");
 			resolve(null);
 
-		}).catch(() => {
+		}else{
 			resolve(null);
-		});
+		};
 	});
 }
 
 // -----------------------------------------
-// 8. LOAD OPEN TRADES
+// 7. LOAD OPEN TRADES
 // -----------------------------------------
 
-function fetchOpenTrades(){
-	web3.eth.net.isListening().then(async () => {
+async function fetchOpenTrades(){
+	if(providers[selectedProvider].connected){
 		if(pairs.length === 0){
 			setTimeout(() => { fetchOpenTrades(); }, 2*1000);
 			return;
@@ -246,18 +309,19 @@ function fetchOpenTrades(){
 				console.log("Fetched open trades: " + openTrades.length);
 			});
 		});
-	}).catch(() => {
+	}else{
 		setTimeout(() => { fetchOpenTrades(); }, 2*1000);
-	});
+	};
 }
 
 // -----------------------------------------
-// 9. WATCH TRADING EVENTS
+// 8. WATCH TRADING EVENTS
 // -----------------------------------------
 
 function watchLiveTradingEvents(){
-	web3.eth.net.isListening().then(() => {
-		tradingContract.events.allEvents({ fromBlock: 'latest' }).on('data', function (event){
+	if(providers[selectedProvider].connected){
+		if(eventSubscription !== null){ return; }
+		eventSubscription = tradingContract.events.allEvents({ fromBlock: 'latest' }).on('data', function (event){
 			const eventName = event.event.toString();
 
 			if(eventName !== "TradeOpenedMarket" && eventName !== "TradeCanceledMarket"
@@ -274,29 +338,18 @@ function watchLiveTradingEvents(){
 			}, process.env.EVENT_CONFIRMATIONS_SEC*1000);
 		});
 
-		watchingEvents = true;
 		console.log("Watching trading events");
-	}).catch(() => {
-		setTimeout(() => { watchingEvents=false; restartWatchingEvents(); }, 2*1000);
-	});
-}
-
-function restartWatchingEvents(){
-	if(watchingEvents){ return; }
-	web3.eth.net.isListening().then(() => {
-    	watchLiveTradingEvents();
-    }).catch(() => {
-    	console.log("Not connected, trying to watch events again in 2 seconds");
-		setTimeout(restartWatchingEvents, 2*1000);
-    });
+	}else{
+		setTimeout(() => { watchLiveTradingEvents(); }, 2*1000);
+	};
 }
 
 // -----------------------------------------
-// 10. REFRESH INTERNAL OPEN TRADES LIST
+// 9. REFRESH INTERNAL OPEN TRADES LIST
 // -----------------------------------------
 
 async function refreshOpenTrades(event){
-	web3.eth.net.isListening().then(async () => {
+	if(providers[selectedProvider].connected){
 		const eventName = event.event.toString();
 		let failed = false;
 
@@ -393,11 +446,11 @@ async function refreshOpenTrades(event){
 			}, process.env.EVENT_CONFIRMATIONS_SEC*1000);
 			console.log("Watch events ("+eventName+"): Trade not found on the blockchain, trying again in "+process.env.EVENT_CONFIRMATIONS_SEC+" seconds.");
 		}
-	}).catch(() => console.log("Error, WSS not connected."));
+	}else { console.log("Error, WSS not connected."); }
 }
 
 // ---------------------------------------------
-// 11. FETCH CURRENT PRICES & TRIGGER ORDERS
+// 10. FETCH CURRENT PRICES & TRIGGER ORDERS
 // ---------------------------------------------
 
 socket.on("prices", async (p) => {
@@ -472,7 +525,7 @@ socket.on("prices", async (p) => {
 });
 
 // -------------------------------------------------
-// 12. CREATE SERVER (USEFUL FOR CLOUD PLATFORMS)
+// 11. CREATE SERVER (USEFUL FOR CLOUD PLATFORMS)
 // -------------------------------------------------
 
 const port = process.env.PORT || 4001;
