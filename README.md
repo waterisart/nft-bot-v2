@@ -49,8 +49,7 @@ Fork this repo to make your own one.
 In heroku: `New > Create new app > ...`
 
 Then use the following buildpacks (in Settings):
-1. https://github.com/timanovsky/subdir-heroku-buildpack
-2. heroku/nodejs
+1. heroku/nodejs
 
 ### 3. Set all .env variables
 
