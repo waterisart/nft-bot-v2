@@ -40,7 +40,7 @@ if(!process.env.WSS_URLS || !process.env.PRICES_URL || !process.env.TRADING_ADDR
 }
 
 async function checkLinkAllowance(){
-	if(providers[selectedProvider].connected){
+	web3[selectedProvider].eth.net.isListening().then(async () => {
 		const allowance = await linkContract.methods.allowance(process.env.PUBLIC_KEY, process.env.TRADING_ADDRESS).call();
 		if(parseFloat(allowance) > 0){
 			allowedLink = true;
@@ -57,9 +57,9 @@ async function checkLinkAllowance(){
 				setTimeout(() => { checkLinkAllowance(); }, 2*1000);
 			});
 		}
-	}else{
+	}).catch(() => {
 		setTimeout(() => { checkLinkAllowance(); }, 5*1000);
-	}
+	});
 }
 
 // -----------------------------------------
@@ -154,21 +154,21 @@ for(var i = 0; i < WSS_URLS.length; i++){
 setInterval(async () => {
 	let promises = [];
 	for(var i = 0; i < WSS_URLS.length; i++){
-		if(providers[i].connected){
-			promises.push(web3[i].eth.getBlockNumber());
-		}else{
-			promises.push(null);
-		}
+		(function(index) {
+			web3[index].eth.net.isListening().then(async () => {
+				promises.push(web3[index].eth.getBlockNumber());
+			}).catch(() => {
+				promises.push(null);
+			});
+		})(i);
 	}
 
 	Promise.all(promises).then((b) => {
 		for(var i = 0; i < WSS_URLS.length; i++){
-			if(providers[i].connected){
-				if(b[i] > b[selectedProvider]){
-					console.log("Switched to WSS " + WSS_URLS[i] + " (block #" + b[i] + " vs #" + b[selectedProvider]);
-					selectProvider(i);
-					break;
-				}
+			if(b[i] > b[selectedProvider]){
+				console.log("Switched to WSS " + WSS_URLS[i] + " (block #" + b[i] + " vs #" + b[selectedProvider]);
+				selectProvider(i);
+				break;
 			}
 		}
 	});
@@ -183,7 +183,7 @@ setInterval(() => {
 // -----------------------------------------
 
 async function fetchTradingVariables(){
-	if(providers[selectedProvider].connected){
+	web3[selectedProvider].eth.net.isListening().then(async () => {
 		const nftSuccessTimelock = await aggregatorContract.methods.nftSuccessTimelock().call();
 		const pairsCount = await aggregatorContract.methods.pairsCount().call();
 		nfts = [];
@@ -228,9 +228,9 @@ async function fetchTradingVariables(){
 			nftTimelock = nftSuccessTimelock;
 			console.log("Fetched trading variables.");
 		});
-	}else{
+	}).catch(() => {
 		setTimeout(() => { fetchTradingVariables(); }, 2*1000);
-	}
+	});
 }
 
 setInterval(() => {
@@ -246,7 +246,7 @@ async function selectNft(){
 	return new Promise(async resolve => {
 		if(nftTimelock === undefined || nfts.length === 0){ resolve(null); return; }
 		
-		if(providers[selectedProvider].connected){
+		web3[selectedProvider].eth.net.isListening().then(async () => {
 			const currentBlock = await web3[selectedProvider].eth.getBlockNumber();
 
 			for(var i = 0; i < nfts.length; i++){
@@ -262,9 +262,9 @@ async function selectNft(){
 			console.log("No suitable NFT to select.");
 			resolve(null);
 
-		}else{
+		}).catch(() => {
 			resolve(null);
-		};
+		});
 	});
 }
 
@@ -273,7 +273,7 @@ async function selectNft(){
 // -----------------------------------------
 
 async function fetchOpenTrades(){
-	if(providers[selectedProvider].connected){
+	web3[selectedProvider].eth.net.isListening().then(async () => {
 		if(pairs.length === 0){
 			setTimeout(() => { fetchOpenTrades(); }, 2*1000);
 			return;
@@ -307,9 +307,9 @@ async function fetchOpenTrades(){
 				console.log("Fetched open trades: " + openTrades.length);
 			});
 		});
-	}else{
+	}).catch(() => {
 		setTimeout(() => { fetchOpenTrades(); }, 2*1000);
-	};
+	});
 }
 
 // -----------------------------------------
@@ -317,7 +317,7 @@ async function fetchOpenTrades(){
 // -----------------------------------------
 
 function watchLiveTradingEvents(){
-	if(providers[selectedProvider].connected){
+	web3[selectedProvider].eth.net.isListening().then(async () => {
 		if(eventSubscription !== null){ return; }
 		eventSubscription = tradingContract.events.allEvents({ fromBlock: 'latest' }).on('data', function (event){
 			const eventName = event.event.toString();
@@ -337,9 +337,9 @@ function watchLiveTradingEvents(){
 		});
 
 		console.log("Watching trading events");
-	}else{
+	}).catch(() => {
 		setTimeout(() => { watchLiveTradingEvents(); }, 2*1000);
-	};
+	});
 }
 
 // -----------------------------------------
@@ -347,7 +347,7 @@ function watchLiveTradingEvents(){
 // -----------------------------------------
 
 async function refreshOpenTrades(event){
-	if(providers[selectedProvider].connected){
+	web3[selectedProvider].eth.net.isListening().then(async () => {
 		const eventName = event.event.toString();
 		let failed = false;
 
@@ -444,7 +444,7 @@ async function refreshOpenTrades(event){
 			}, process.env.EVENT_CONFIRMATIONS_SEC*1000);
 			console.log("Watch events ("+eventName+"): Trade not found on the blockchain, trying again in "+process.env.EVENT_CONFIRMATIONS_SEC+" seconds.");
 		}
-	}else { console.log("Error, WSS not connected."); }
+	}).catch(() => { console.log("Error, WSS not connected."); });
 }
 
 // ---------------------------------------------
