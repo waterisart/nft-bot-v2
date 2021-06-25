@@ -70,12 +70,12 @@ const WSS_URLS = process.env.WSS_URLS.split(",");
 
 function selectProvider(n){
 	if(eventSubscription !== null){
-		eventSubscription = null;
 		eventSubscription.unsubscribe()
 		.then(() => console.log("Unsubscribed from events with old provider."))
-		.catch((e) => console.log("Couldn't unsubscribe from events with old provider ("+e+")."));
+		.catch((e) => console.log("Couldn't unsubscribe from events with old provider ("+e+")."));		
 	}
 
+	eventSubscription = null;
 	selectedProvider = n;
 	tradingContract = new web3[n].eth.Contract(TRADING_ABI, process.env.TRADING_ADDRESS);
 	aggregatorContract = new web3[n].eth.Contract(AGGREGATOR_ABI, process.env.AGGREGATOR_ADDRESS);
@@ -147,10 +147,10 @@ const getProvider = (wssId) => {
 };
 
 for(var i = 0; i < WSS_URLS.length; i++){
-	const provider = getProvider(i)
+	const provider = getProvider(i);
 	providers.push(provider);
 	HDWalletProvider.prototype.on = provider.on.bind(provider);
-	web3.push(new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, provider)))
+	web3.push(new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, provider)));
 }
 
 setInterval(async () => {
