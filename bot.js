@@ -503,7 +503,7 @@ socket.on("prices", async (p) => {
 				console.log("Try to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 
 				tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.userTradesIndex, nft.id, nft.type)
-				.send({from: process.env.PUBLIC_KEY}).then(() => {
+				.send({gasPrice:'20000000000', from: process.env.PUBLIC_KEY}).then(() => {
 					console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 					setTimeout(() => {
 						ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
