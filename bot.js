@@ -47,11 +47,24 @@ async function checkLinkAllowance(){
 		}else{
 			console.log("LINK not allowed, approving now.");
 			
-			await linkContract.methods.approve(process.env.TRADING_ADDRESS, "115792089237316195423570985008687907853269984665640564039457584007913129639935")
-			.send({from: process.env.PUBLIC_KEY}).then(() => {
-				console.log("LINK successfully approved.");
-				allowedLink = true;
-			}).catch((e) => {
+			const tx = {
+				from: process.env.PUBLIC_KEY,
+			    to : process.env.LINK_ADDRESS,
+			    data : linkContract.methods.approve(process.env.TRADING_ADDRESS, "115792089237316195423570985008687907853269984665640564039457584007913129639935").encodeABI(),
+			    gasPrice: web3[selectedProvider].utils.toHex("20000000000"),
+			    gas: web3[selectedProvider].utils.toHex("100000")
+			};
+
+			web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
+			    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
+			    .on('receipt', () => {
+					console.log("LINK successfully approved.");
+					allowedLink = true;
+			    }).on('error', (e) => {
+			    	console.log("LINK approve tx fail (" + e + ")");
+					setTimeout(() => { checkLinkAllowance(); }, 2*1000);
+			    });
+			}).catch(e => {
 				console.log("LINK approve tx fail (" + e + ")");
 				setTimeout(() => { checkLinkAllowance(); }, 2*1000);
 			});
@@ -500,7 +513,7 @@ socket.on("prices", async (p) => {
 
 				const tx = {
 					from: process.env.PUBLIC_KEY,
-				    to : tradingContract._address,
+				    to : process.env.TRADING_ADDRESS,
 				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.userTradesIndex, nft.id, nft.type).encodeABI(),
 				    gasPrice: web3[selectedProvider].utils.toHex("20000000000"),
 				    gas: web3[selectedProvider].utils.toHex("2000000")
