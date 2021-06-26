@@ -30,7 +30,7 @@ Each request to trigger an order will cost 0.005 LINK (to pay our node operators
 
 ### 2. Edit the .env variables
 
-1. Set WSS_1 and WSS_2 to your dedicated endpoints (recommended, but ignore if you don't have any)
+1. Set WSS_URLS to your dedicated WSS endpoints (recommended, but ignore if you don't have any)
 2. Set PRIVATE_KEY to your account's private key (needed to sign the transactions)
 3. Set PUBLIC_KEY to your account's public key
 
