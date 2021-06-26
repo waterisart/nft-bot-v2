@@ -7,7 +7,6 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 const Web3 = require("web3");
-const HDWalletProvider = require("@truffle/hdwallet-provider");
 const fetch = require("node-fetch");
 const io = require("socket.io-client");
 const socket = io(process.env.PRICES_URL);
@@ -92,7 +91,6 @@ const getProvider = (wssId) => {
 	const provider = new Web3.providers.WebsocketProvider(WSS_URLS[wssId], {clientConfig:{keepalive:true,keepaliveInterval:30*1000}});
 
 	provider.on('close', () => {
-		web3[wssId]._provider.engine.stop();
 		setTimeout(() => {
 			if(!provider.connected){
 				console.log(WSS_URLS[wssId]+' closed: trying to reconnect...');
@@ -112,8 +110,7 @@ const getProvider = (wssId) => {
 				}
 
 				providers[wssId] = getProvider(wssId);
-				HDWalletProvider.prototype.on = provider.on.bind(providers[wssId]);
-				web3[wssId] = new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, providers[wssId]));
+				web3[wssId] = new Web3(providers[wssId]);
 			}
 		}, 5*1000);
 	});
@@ -147,8 +144,7 @@ const getProvider = (wssId) => {
 for(var i = 0; i < WSS_URLS.length; i++){
 	const provider = getProvider(i);
 	providers.push(provider);
-	HDWalletProvider.prototype.on = provider.on.bind(provider);
-	web3.push(new Web3(new HDWalletProvider(process.env.PRIVATE_KEY, provider)));
+	web3.push(new Web3(provider));
 }
 
 setInterval(async () => {
@@ -502,20 +498,37 @@ socket.on("prices", async (p) => {
 
 				console.log("Try to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 
-				tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.userTradesIndex, nft.id, nft.type)
-				.send({gasPrice:'20000000000', from: process.env.PUBLIC_KEY}).then(() => {
-					console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
-					setTimeout(() => {
+				const tx = {
+					from: process.env.PUBLIC_KEY,
+				    to : tradingContract._address,
+				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.userTradesIndex, nft.id, nft.type).encodeABI(),
+				    gasPrice: web3[selectedProvider].utils.toHex("20000000000"),
+				    gas: web3[selectedProvider].utils.toHex("2000000")
+				};
+
+				web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
+				    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
+				    .on('receipt', () => {
+						console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+						setTimeout(() => {
+							ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
+							nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
+						}, process.env.TRIGGER_TIMEOUT*1000);
+				    }).on('error', (e) => {
+				    	console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+						console.log("Tx error (" + e + ")");
+				    	setTimeout(() => {
+							ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
+							nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
+						}, process.env.TRIGGER_TIMEOUT*1000);
+				    });
+				}).catch(e => {
+					console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+					console.log("Tx error (" + e + ")");
+			    	setTimeout(() => {
 						ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
 						nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
 					}, process.env.TRIGGER_TIMEOUT*1000);
-				}).catch((e) => {
-					console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
-					console.log("Tx error (" + e + ")");
-					setTimeout(() => {
-						ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
-						nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
-					}, process.env.TRIGGER_TIMEOUT/2*1000);
 				});
 			}
 		}
