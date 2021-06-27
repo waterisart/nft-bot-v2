@@ -452,6 +452,10 @@ async function refreshOpenTrades(event){
 				refreshOpenTrades(event);
 			}, process.env.EVENT_CONFIRMATIONS_SEC*1000);
 			console.log("Watch events ("+eventName+"): Trade not found on the blockchain, trying again in "+process.env.EVENT_CONFIRMATIONS_SEC+" seconds.");
+		}else if(eventName === "TradeLimitExecuted" || eventName === "TradeOpenedMarket" || eventName === "TradeClosedMarket"){
+			const pair = await aggregatorContract.methods.pairs(event.returnValues.pairIndex).call();
+			pairs[event.returnValues.pairIndex].openInterestToken = pair.openInterestToken;
+			console.log("Refreshed pair "+ event.returnValues.pairIndex +" current open interest: " + Number(pair.openInterestToken/1e18).toFixed(2));
 		}
 	}).catch(() => { console.log("Error, WSS not connected."); });
 }
@@ -493,8 +497,12 @@ socket.on("prices", async (p) => {
 			}else{
 				const spread = pairs[t.pairIndex].spreadP/1e10*(100-t.spreadReductionP)/100;
 				const priceIncludingSpread = !buy ? price*(1-spread/100) : price*(1+spread/100);
+				const interest = parseFloat(pairs[t.pairIndex].openInterestToken);
+				const newInterest = (interest + parseFloat(t.leverage)*parseFloat(t.positionSizeToken));
+				const maxInterest = parseFloat(pairs[t.pairIndex].maxOpenInterestToken);
 
-				if(priceIncludingSpread >= parseFloat(t.minPrice)/1e10 && priceIncludingSpread <= parseFloat(t.maxPrice)/1e10){
+				if(priceIncludingSpread >= parseFloat(t.minPrice)/1e10 && priceIncludingSpread <= parseFloat(t.maxPrice)/1e10
+				&& newInterest <= maxInterest){
 					orderType = 4;
 				}
 			}
