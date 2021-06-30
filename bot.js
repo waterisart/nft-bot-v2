@@ -166,12 +166,16 @@ setInterval(async () => {
 		(function(index) {
 			web3[index].eth.net.isListening().then(async () => {
 				promises.push(web3[index].eth.getBlockNumber());
+				if(promises.length === WSS_URLS.length){ compareBlocks(promises); }
 			}).catch(() => {
 				promises.push(null);
+				if(promises.length === WSS_URLS.length){ compareBlocks(promises); }
 			});
 		})(i);
 	}
+}, 20*1000);
 
+function compareBlocks(promises){
 	Promise.all(promises).then((b) => {
 		for(var i = 0; i < WSS_URLS.length; i++){
 			if(b[i] > b[selectedProvider]){
@@ -181,7 +185,7 @@ setInterval(async () => {
 			}
 		}
 	});
-}, 20*1000);
+}
 
 setInterval(() => {
 	console.log("Current WSS: " + WSS_URLS[selectedProvider]);
