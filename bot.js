@@ -62,7 +62,6 @@ async function checkLinkAllowance(){
 			    .on('receipt', () => {
 					console.log("LINK successfully approved.");
 					allowedLink = true;
-					nonce++;
 			    }).on('error', (e) => {
 			    	console.log("LINK approve tx fail (" + e + ")");
 					setTimeout(() => { checkLinkAllowance(); }, 2*1000);
@@ -222,8 +221,6 @@ setInterval(() => {
 
 async function fetchTradingVariables(){
 	web3[selectedProvider].eth.net.isListening().then(async () => {
-		nonce = await web3[selectedProvider].eth.getTransactionCount(process.env.PUBLIC_KEY);
-
 		const maxPerPair = await storageContract.methods.maxTradesPerPair().call();
 		const nftSuccessTimelock = await storageContract.methods.nftSuccessTimelock().call();
 		const pairsCount = await aggregatorContract.methods.pairsCount().call();
@@ -653,16 +650,16 @@ socket.on("prices", async (p) => {
 
 				console.log("Try to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 
+				//nonce = await web3[selectedProvider].eth.getTransactionCount(process.env.PUBLIC_KEY);
+
 				const tx = {
 					from: process.env.PUBLIC_KEY,
 				    to : tradingAddress,
 				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
 				    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
 				    gas: web3[selectedProvider].utils.toHex("2000000"),
-				    nonce: nonce
+				    //nonce: nonce
 				};
-
-				nonce++;
 
 				web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
 				    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
@@ -675,7 +672,6 @@ socket.on("prices", async (p) => {
 				    }).on('error', (e) => {
 				    	console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 						console.log("Tx error (" + e + ")");
-						nonce--;
 				    	setTimeout(() => {
 							ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
 							nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
@@ -684,7 +680,6 @@ socket.on("prices", async (p) => {
 				}).catch(e => {
 					console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 					console.log("Tx error (" + e + ")");
-					nonce--;
 			    	setTimeout(() => {
 						ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
 						nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
