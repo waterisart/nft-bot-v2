@@ -259,12 +259,11 @@ async function fetchTradingVariables(){
 		}
 
 		Promise.all(pairsPromises).then(async (s) => {
-			openInterests = [];
 			for(var j = 0; j < s.length; j++){
 				const openInterestLong = await storageContract.methods.openInterestDai(j, 0).call();
 				const openInterestShort = await storageContract.methods.openInterestDai(j, 1).call();
 				const openInterestMax = await storageContract.methods.openInterestDai(j, 2).call();
-				openInterests.push({long: openInterestLong, short: openInterestShort, max: openInterestMax});
+				openInterests[j] = {long: openInterestLong, short: openInterestShort, max: openInterestMax};
 			}
 
 			pairs = [];
