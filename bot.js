@@ -657,7 +657,7 @@ socket.on("prices", async (p) => {
 				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
 				    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
 				    gas: web3[selectedProvider].utils.toHex("2000000"),
-				    gasLimit: "3000000"
+				    gasLimit: web3[selectedProvider].utils.toHex("3000000")
 				    //nonce: nonce
 				};
 
@@ -708,7 +708,7 @@ if(process.env.VAULT_REFILL_ENABLED){
 				    data : vaultContract.methods.refill().encodeABI(),
 				    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
 				    gas: web3[selectedProvider].utils.toHex("1000000"),
-				    gasLimit: "500000"
+				    gasLimit: web3[selectedProvider].utils.toHex("500000")
 				};
 
 				web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
