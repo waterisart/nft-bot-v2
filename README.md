@@ -19,13 +19,13 @@ https://polygonscan.com/token/0x2d266a94469d05c9e06d52a4d0d9c23b157767c2#writeCo
 
 Because the "normal" LINK token on Polygon is an ERC20, and oracles only support the ERC677 version, you will need to convert your LINK tokens here: https://pegswap.chain.link/
 
-Each request to trigger an order will cost 0.005 LINK (to pay our node operators for our real-time feed).
+Each request to trigger an order will cost some LINK (0.003% of pos x leverage for cryptos, 0.0006% for forex) to pay our node operators for our real-time feed.
 
 ## Tutorial (run locally)
 
 ### 1. Clone the repo & install the dependencies
 
-1. `git clone https://github.com/GainsFarm/nft-bot.git`
+1. `git clone https://github.com/GainsFarm/nft-bot-v2.git`
 2. `npm install`
 
 ### 2. Edit the .env variables
@@ -59,3 +59,6 @@ In Heroku: `Settings > Reveal Config Vars > Add`
 
 1. Connect Github to your account
 2. Deploy your main branch
+
+## Vault refills
+If you want to help the ecosystem, you can keep the .env variable named "VAULT_REFILL_ENABLED" set to "true", it contributes to the decentralization of the vault refilling mechanism. If you want to disable it (because it does cost some gas), you can set it to false.
