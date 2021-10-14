@@ -1,5 +1,5 @@
-# Gains.farm NFT Bot
-Bot that executes limit orders on Gains.farm, the decentralized leverage trading platform on Polygon.
+# Gains.farm NFT Bot (v5 update)
+Bot that executes limit orders for the v5 of Gains.farm, the decentralized leveraged trading platform on Polygon.
 
 ## Preparation
 
