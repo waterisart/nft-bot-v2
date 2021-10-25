@@ -26,7 +26,8 @@ let allowedLink = false, selectedProvider = null, eventSubTrading = null, eventS
 	providers = [], web3 = [], openTrades = [], pairs = [], openInterests = [], nfts = [], nftsBeingUsed = [], ordersTriggered = [],
 	storageContract, tradingContract, tradingAddress, aggregatorContract, callbacksContract, vaultContract,
 	nftTimelock, maxTradesPerPair,
-	nftContract1, nftContract2, nftContract3, nftContract4, nftContract5, linkContract;
+	nftContract1, nftContract2, nftContract3, nftContract4, nftContract5, linkContract,
+	gainsNetworkTokenPrice = 0;
 
 // --------------------------------------------
 // 3. INIT: CHECK ENV VARS & LINK ALLOWANCE
@@ -194,6 +195,38 @@ setInterval(async () => {
 		})(i);
 	}
 }, 20*1000);
+
+async function fetchGainsNetworkTokenPrice() {
+	console.log("gains-farm fetch price");
+
+	const https = require('https')
+	const options = {
+	  hostname: 'api.coingecko.com',
+	  port: 443,
+	  path: '/api/v3/simple/price?ids=gains-farm&vs_currencies=usd',
+	  method: 'GET'
+	}
+
+	const req = https.request(options, res => {
+	  console.log(`statusCode: ${res.statusCode}`)
+
+	  res.on('data', d => {
+	    let json = JSON.parse(d);
+	    console.log(json);
+	    gainsNetworkTokenPrice = json["gains-farm"].usd;
+	  })
+	})
+
+	req.on('error', error => {
+	  console.error(error)
+	})
+
+	req.end();
+}
+fetchGainsNetworkTokenPrice();
+setInterval(fetchGainsNetworkTokenPrice, 55*1000);
+
+// https://api.coingecko.com/api/v3/simple/price?ids=gains-farm&vs_currencies=usd
 
 function compareBlocks(promises){
 	let orderedPromises = [];
@@ -633,7 +666,9 @@ socket.on("prices", async (p) => {
 				}
 			}
 
-			if(orderType > -1 && !alreadyTriggered(t, orderType)){
+			let initPosDai = gainsNetworkTokenPrice*(t.initialPosToken/1e18);
+			if(orderType === 2 && initPosDai >= process.env.LIQ_INIT_DAI_POSITION && !alreadyTriggered(t, orderType)){
+
 				ordersTriggered.push({trade: t, orderType: orderType});
 
 				const nft = await selectNft();
@@ -651,18 +686,25 @@ socket.on("prices", async (p) => {
 
 				//nonce = await web3[selectedProvider].eth.getTransactionCount(process.env.PUBLIC_KEY);
 
+				// const gasMultiplier = initPosDai / process.env.LIQ_INIT_DAI_POSITION;
+				// const gas = process.env.GAS;
+				// const gasPriceRaw = process.env.GAS_PRICE_GWEI*1e9*gasMultiplier;
+				// const gasPrice =  parseInt((gasPriceRaw * gas >= process.env.COMMISSION_MAX_MATIC*1e18) 
+				// 	? (process.env.COMMISSION_MAX_MATIC*1e18 / gas) : gasPriceRaw);
 				const tx = {
 					from: process.env.PUBLIC_KEY,
 				    to : tradingAddress,
 				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
 				    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
-				    gas: web3[selectedProvider].utils.toHex("2000000"),
-				    gasLimit: web3[selectedProvider].utils.toHex("3000000")
+				    gas: web3[selectedProvider].utils.toHex(process.env.GAS),
+				    gasLimit: web3[selectedProvider].utils.toHex("6500000")
 				    //nonce: nonce
 				};
-
+				console.log((new Date).toISOString(), tx);
+				console.log("LIQ caught with init POS size: " + initPosDai);
+				
 				web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
-				    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
+			    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
 				    .on('receipt', () => {
 						console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 						setTimeout(() => {
@@ -694,7 +736,7 @@ socket.on("prices", async (p) => {
 // REFILL VAULT IF CAN BE REFILLED
 // ------------------------------------------
 
-if(process.env.VAULT_REFILL_ENABLED){
+if(parseInt(process.env.VAULT_REFILL_ENABLED)){
 	async function refill(){
 		const canRefill = await vaultContract.methods.canRefill().call();
 		if(canRefill){
@@ -730,6 +772,8 @@ if(process.env.VAULT_REFILL_ENABLED){
 	setInterval(() => {
 		refill();
 	}, process.env.CHECK_REFILL_SEC*1000);
+} else {
+	console.log("Vault refill disabled.")
 }
 
 // -------------------------------------------------
