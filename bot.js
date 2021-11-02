@@ -203,7 +203,7 @@ async function fetchGainsNetworkTokenPrice() {
 	const options = {
 	  hostname: 'api.coingecko.com',
 	  port: 443,
-	  path: '/api/v3/simple/price?ids=gains-farm&vs_currencies=usd',
+	  path: '/api/v3/simple/price?ids=gains-network&vs_currencies=usd',
 	  method: 'GET'
 	}
 
@@ -213,7 +213,7 @@ async function fetchGainsNetworkTokenPrice() {
 	  res.on('data', d => {
 	    let json = JSON.parse(d);
 	    console.log(json);
-	    gainsNetworkTokenPrice = json["gains-farm"].usd;
+	    gainsNetworkTokenPrice = json["gains-network"].usd;
 	  })
 	})
 
