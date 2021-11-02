@@ -667,7 +667,7 @@ socket.on("prices", async (p) => {
 			}
 
 			let initPosDai = gainsNetworkTokenPrice*(t.initialPosToken/1e18);
-			if(orderType === 2 && initPosDai >= process.env.LIQ_INIT_DAI_POSITION && !alreadyTriggered(t, orderType)){
+			if(orderType === 2 && initPosDai >= process.env.LIQ_INIT_DAI_POSITION && !alreadyTriggered(t, orderType)) {
 
 				ordersTriggered.push({trade: t, orderType: orderType});
 
@@ -685,52 +685,65 @@ socket.on("prices", async (p) => {
 				console.log("Try to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 
 				//nonce = await web3[selectedProvider].eth.getTransactionCount(process.env.PUBLIC_KEY);
+				tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type)
+				.estimateGas({from: process.env.PUBLIC_KEY}, (error, result) => {
+					if(error){
+						console.log("Tx error, not triggering. You probably need to refill your address with LINK or MATIC tokens.");
+					}else{
+						if(alreadyTriggered(t, orderType) || nftsBeingUsed.includes(nft.id)) return;
 
-				// const gasMultiplier = initPosDai / process.env.LIQ_INIT_DAI_POSITION;
-				// const gas = process.env.GAS;
-				// const gasPriceRaw = process.env.GAS_PRICE_GWEI*1e9*gasMultiplier;
-				// const gasPrice =  parseInt((gasPriceRaw * gas >= process.env.COMMISSION_MAX_MATIC*1e18) 
-				// 	? (process.env.COMMISSION_MAX_MATIC*1e18 / gas) : gasPriceRaw);
-				const tx = {
-					from: process.env.PUBLIC_KEY,
-				    to : tradingAddress,
-				    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
-				    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
-				    gas: web3[selectedProvider].utils.toHex(process.env.GAS),
-				    gasLimit: web3[selectedProvider].utils.toHex("6500000")
-				    //nonce: nonce
-				};
-				console.log((new Date).toISOString(), tx);
-				console.log("LIQ caught with init POS size: " + initPosDai);
+						nftsBeingUsed.push(nft.id);
+						ordersTriggered.push({trade: t, orderType: orderType});
 				
-				web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
-			    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
-				    .on('receipt', () => {
-						console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
-						setTimeout(() => {
-							ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
-							nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
-						}, process.env.TRIGGER_TIMEOUT*1000);
-				    }).on('error', (e) => {
-				    	console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
-						console.log("Tx error (" + e + ")");
-				    	setTimeout(() => {
-							ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
-							nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
-						}, process.env.TRIGGER_TIMEOUT*1000);
-				    });
-				}).catch(e => {
-					console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
-					console.log("Tx error (" + e + ")");
-			    	setTimeout(() => {
-						ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
-						nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
-					}, process.env.TRIGGER_TIMEOUT*1000);
+
+						// const gasMultiplier = initPosDai / process.env.LIQ_INIT_DAI_POSITION;
+						// const gas = process.env.GAS;
+						// const gasPriceRaw = process.env.GAS_PRICE_GWEI*1e9*gasMultiplier;
+						// const gasPrice =  parseInt((gasPriceRaw * gas >= process.env.COMMISSION_MAX_MATIC*1e18) 
+						// 	? (process.env.COMMISSION_MAX_MATIC*1e18 / gas) : gasPriceRaw);
+						const tx = {
+							from: process.env.PUBLIC_KEY,
+						    to : tradingAddress,
+						    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
+						    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
+						    gas: web3[selectedProvider].utils.toHex(process.env.GAS),
+						    gasLimit: web3[selectedProvider].utils.toHex("6500000")
+						    //nonce: nonce
+						};
+						console.log((new Date).toISOString(), tx);
+						console.log("LIQ caught with init POS size: " + initPosDai);
+						
+						web3[selectedProvider].eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY).then(signed => {
+					    web3[selectedProvider].eth.sendSignedTransaction(signed.rawTransaction)
+						    .on('receipt', () => {
+								console.log("Triggered (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+								setTimeout(() => {
+									ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
+									nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
+								}, process.env.TRIGGER_TIMEOUT*1000);
+						    }).on('error', (e) => {
+						    	console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+								console.log("Tx error (" + e + ")");
+						    	setTimeout(() => {
+									ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
+									nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
+								}, process.env.TRIGGER_TIMEOUT*1000);
+						    });
+						}).catch(e => {
+							console.log("Failed to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
+							console.log("Tx error (" + e + ")");
+					    	setTimeout(() => {
+								ordersTriggered = ordersTriggered.filter(item => JSON.stringify(item) !== JSON.stringify({trade:orderInfo.trade, orderType: orderInfo.type}));
+								nftsBeingUsed = nftsBeingUsed.filter(item => item !== orderInfo.nftId);
+							}, process.env.TRIGGER_TIMEOUT*1000);
+						});
+					}
 				});
 			}
 		}
 	}
 });
+
 
 // ------------------------------------------
 // REFILL VAULT IF CAN BE REFILLED
