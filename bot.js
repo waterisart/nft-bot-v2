@@ -676,9 +676,6 @@ socket.on("prices", async (p) => {
 			let isLinkInsideLimits = (linkForNodeOperators >= parseFloat(process.env.LINK_LOWER_LIMIT) && linkForNodeOperators <= parseFloat(process.env.LINK_UPPER_LIMIT));
 
 			if(isLiq && isPosOverLiqLimit && isLinkInsideLimits && !alreadyTriggered(t, orderType)) {
-	
-				console.log("Init pos dai, link for node opers", initPosDai, linkForNodeOperators);
-				console.log(t); return;
 
 				const nft = await selectNft();
 				if(nft === null){ 
