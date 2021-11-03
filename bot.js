@@ -197,13 +197,14 @@ setInterval(async () => {
 }, 20*1000);
 
 async function fetchGainsNetworkTokenPrice() {
-	console.log("gains-farm fetch price");
+	const coingeckoId = 'gains-network';
 
+	console.log(`${coingeckoId} fetch price from coingecko`);
 	const https = require('https')
 	const options = {
 	  hostname: 'api.coingecko.com',
 	  port: 443,
-	  path: '/api/v3/simple/price?ids=gains-network&vs_currencies=usd',
+	  path: `/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd`,
 	  method: 'GET'
 	}
 
@@ -213,7 +214,7 @@ async function fetchGainsNetworkTokenPrice() {
 	  res.on('data', d => {
 	    let json = JSON.parse(d);
 	    console.log(json);
-	    gainsNetworkTokenPrice = json["gains-network"].usd;
+	    gainsNetworkTokenPrice = json[coingeckoId].usd;
 	  })
 	})
 
@@ -666,25 +667,29 @@ socket.on("prices", async (p) => {
 				}
 			}
 
+			
+			let isLiq = (orderType === 2);
 			let initPosDai = gainsNetworkTokenPrice*(t.initialPosToken/1e18);
-			if(orderType === 2 && initPosDai >= process.env.LIQ_INIT_DAI_POSITION && !alreadyTriggered(t, orderType)) {
+			let isPosOverLiqLimit = initPosDai >= parseInt(process.env.LIQ_LOWER_LIMIT_DAI);
+			let leveragedPosDai = initPosDai * parseInt(t.leverage);
+			let linkForNodeOperators = leveragedPosDai * 0.00003;
+			let isLinkInsideLimits = (linkForNodeOperators >= parseFloat(process.env.LINK_LOWER_LIMIT) && linkForNodeOperators <= parseFloat(process.env.LINK_UPPER_LIMIT));
 
-				ordersTriggered.push({trade: t, orderType: orderType});
+			if(isLiq && isPosOverLiqLimit && isLinkInsideLimits && !alreadyTriggered(t, orderType)) {
+	
+				console.log("Init pos dai, link for node opers", initPosDai, linkForNodeOperators);
+				console.log(t); return;
 
 				const nft = await selectNft();
 				if(nft === null){ 
-					ordersTriggered.pop();
 					return; 
 				}
-
-				nftsBeingUsed.push(nft.id);
 
 				const orderInfo = {nftId: nft.id, trade: t, type: orderType,
 					name: orderType === 0 ? "TP" : orderType === 1 ? "SL" : orderType === 2 ? "LIQ" : "OPEN LIMIT"};
 
 				console.log("Try to trigger (order type: " + orderInfo.name + ", nft id: "+orderInfo.nftId+")");
 
-				//nonce = await web3[selectedProvider].eth.getTransactionCount(process.env.PUBLIC_KEY);
 				tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type)
 				.estimateGas({from: process.env.PUBLIC_KEY}, (error, result) => {
 					if(error){
@@ -695,20 +700,13 @@ socket.on("prices", async (p) => {
 						nftsBeingUsed.push(nft.id);
 						ordersTriggered.push({trade: t, orderType: orderType});
 				
-
-						// const gasMultiplier = initPosDai / process.env.LIQ_INIT_DAI_POSITION;
-						// const gas = process.env.GAS;
-						// const gasPriceRaw = process.env.GAS_PRICE_GWEI*1e9*gasMultiplier;
-						// const gasPrice =  parseInt((gasPriceRaw * gas >= process.env.COMMISSION_MAX_MATIC*1e18) 
-						// 	? (process.env.COMMISSION_MAX_MATIC*1e18 / gas) : gasPriceRaw);
 						const tx = {
 							from: process.env.PUBLIC_KEY,
 						    to : tradingAddress,
 						    data : tradingContract.methods.executeNftOrder(orderType, t.trader, t.pairIndex, t.index, nft.id, nft.type).encodeABI(),
 						    gasPrice: web3[selectedProvider].utils.toHex(process.env.GAS_PRICE_GWEI*1e9),
 						    gas: web3[selectedProvider].utils.toHex(process.env.GAS),
-						    gasLimit: web3[selectedProvider].utils.toHex("6500000")
-						    //nonce: nonce
+						    gasLimit: web3[selectedProvider].utils.toHex("7500000")
 						};
 						console.log((new Date).toISOString(), tx);
 						console.log("LIQ caught with init POS size: " + initPosDai);
