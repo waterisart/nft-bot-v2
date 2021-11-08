@@ -7,8 +7,8 @@ const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
 const Web3 = require("web3");
-const io = require("socket.io-client");
-const socket = io(process.env.PRICES_URL);
+const WebSocket = require('ws');
+const socket = new WebSocket(process.env.PRICES_URL);
 
 // -----------------------------------------
 // 2. GLOBAL VARIABLES
@@ -625,7 +625,9 @@ function alreadyTriggered(trade, orderType){
 	return false;
 }
 
-socket.on("prices", async (p) => {
+socket.onmessage = async (msg) => {
+	const p = JSON.parse(msg.data);
+	if(p.closes === undefined) return;
 	if(pairs.length > 0 && allowedLink){
 		for (let i = openTrades.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -636,7 +638,7 @@ socket.on("prices", async (p) => {
 
 		for(var i = 0; i < openTrades.length; i++){
 			const t = openTrades[i];
-			const price = p.lastPrices[t.pairIndex];
+			const price = p.closes[t.pairIndex];
 			const buy = t.buy.toString() === "true";
 			let orderType = -1;
 
@@ -737,7 +739,7 @@ socket.on("prices", async (p) => {
 			}
 		}
 	}
-});
+};
 
 
 // ------------------------------------------
