@@ -674,7 +674,7 @@ socket.onmessage = async (msg) => {
 			let initPosDai = gainsNetworkTokenPrice*(t.initialPosToken/1e18);
 			let isPosOverLiqLimit = initPosDai >= parseInt(process.env.LIQ_LOWER_LIMIT_DAI);
 			let leveragedPosDai = initPosDai * parseInt(t.leverage);
-			let linkForNodeOperators = leveragedPosDai * 0.00003;
+			let linkForNodeOperators = leveragedPosDai * parseFloat(process.env.NODE_FEE);
 			let isLinkInsideLimits = (linkForNodeOperators >= parseFloat(process.env.LINK_LOWER_LIMIT) && linkForNodeOperators <= parseFloat(process.env.LINK_UPPER_LIMIT));
 
 			if(isLiq && isPosOverLiqLimit && isLinkInsideLimits && !alreadyTriggered(t, orderType)) {
