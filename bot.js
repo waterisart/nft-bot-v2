@@ -643,11 +643,12 @@ socket.onmessage = async (msg) => {
 			let orderType = -1;
 
 			if(t.openPrice !== undefined){
+				const liqThreshold = parseFloat(process.env.LIQ_THRESHOLD) || 0.9;
 				const tp = parseFloat(t.tp)/1e10;
 				const sl = parseFloat(t.sl)/1e10;
 				const open = parseFloat(t.openPrice)/1e10;
 				const lev = parseFloat(t.leverage);
-				const liqPrice = buy ? open - 0.9/lev*open : open + 0.9/lev*open;
+				const liqPrice = buy ? open - liqThreshold/lev*open : open + liqThreshold/lev*open;
 
 				if(tp.toString() !== "0" && ((buy && price >= tp) || (!buy && price <= tp))){
 					orderType = 0;
